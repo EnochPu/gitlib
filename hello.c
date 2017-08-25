@@ -54,8 +54,18 @@ struct hello_dev_t *hello_dev;
 
 
 int hello_open(struct inode *inode,struct file *filp)
-{
+{  
+    struct hello_dev_t *dev = hello_dev;
+    int num = MINOR(inode->i_rdev); //get minor device num
+
     printk(KERN_NOTICE"====hello_dev open===");
+                
+    
+    if(num >= DEV_DEVS)
+          return -ENODEV;
+ 
+    filp->private_data = dev;           //assignment device struct pointer to file private data pointer
+
     return 0;
 }
 
@@ -97,7 +107,7 @@ int static hello_init(void)
      
 
                          
-          printk("<0>""=============init2==================");
+          printk("<0>""=============init1==================");
      if(dev_major)
        res = register_chrdev_region(devno,DEV_DEVS,"hellodev"); //allot device number
      else
@@ -109,22 +119,22 @@ int static hello_init(void)
          return res;
     
 
-     printk("<0>""=============init4==================");
+     printk("<0>""=============init2==================");
      hello_dev = kmalloc(DEV_DEVS*sizeof(struct hello_dev_t),GFP_KERNEL);  //allot memory for dev
-     printk("<0>""=============init5==================");
+     printk("<0>""=============init3==================");
      if(!hello_dev)
      {
          res = -ENOMEM;
          goto fail_malloc;
      }
-     printk("<0>""=============init6==================");
+     printk("<0>""=============init4==================");
      memset(hello_dev,0,sizeof(struct hello_dev_t));
      
      cdev_init(&hello_dev->cdev,&hello_dev_fops);        //building connect between in cdev and fops    
-     printk("<0>""=============init1==================");
+     printk("<0>""=============init5==================");
      hello_dev->cdev.owner = THIS_MODULE;
      hello_dev->cdev.ops = &hello_dev_fops;
-     printk("<0>""=============init3==================");
+     printk("<0>""=============init6==================");
      cdev_add(&hello_dev->cdev,MKDEV(dev_major,0),DEV_DEVS);
 
     

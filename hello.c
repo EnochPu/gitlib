@@ -91,7 +91,7 @@ int static hello_init(void)
 {
      int res;
      dev_t devno = MKDEV(dev_major,0); 
-    // struct class *helloclass;
+     struct class *helloclass;
 
      printk("<0>""hello world,mine cdev is poweron");
      
@@ -128,8 +128,8 @@ int static hello_init(void)
      cdev_add(&hello_dev->cdev,MKDEV(dev_major,0),DEV_DEVS);
 
     
-     //helloclass = class_create(THIS_MODULE,"hello_device");    //creating device file at /dev
-    // device_create(helloclass,NULL,devno,NULL,"hello_device");
+     helloclass = class_create(THIS_MODULE,"hello_device");    //creating device file at /dev
+     device_create(helloclass,NULL,devno,NULL,"hello_device");
      
      return 0;
   
